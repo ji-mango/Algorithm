@@ -9,6 +9,8 @@
 
 출력 : 첫째 줄에 M원을 만들기 위한 최소한의 화폐 개수를 출력한다.
       불가능할 때는 -1을 출력한다.
+    
+comment : 점화식을 생각해내는게 아직은 어렵지만 그래도 처음에 비해 나아진 것 같다.
 '''
 n, m = map(int, input().split())
 array = []
@@ -20,4 +22,9 @@ d[0] = 0
 for i in range(n):
     for j in range(array[i], m+1):
         if d[j-array[i]] != 10001:
+            d[j] = min(d[j], d[j-array[i]] + 1)
 
+if d[m] == 10001:
+    print(-1)
+else:
+    print(d[m])
