@@ -12,44 +12,68 @@
 입력으로 주어지는 가로선이 서로 연속하는 경우는 없다.
 
 출력 : i번 세로선의 결과가 i번이 나오도록 사다리 게임을 조작하려면, 추가해야 하는 가로선 개수의 최솟값을 출력한다. 만약, 정답이 3보다 큰 값이면 -1을 출력한다. 또, 불가능한 경우에도 -1을 출력한다.
+
+comment : 마의 9%를 뚫을 수 없었다.... 꿈에 시간초과가 나올거같다....... 다음에 다시풀자..
 '''
+from itertools import product, combinations
+import copy
+
 n, m, h = map(int, input().split())
 array = [[]]
 for i in range(m):
     array.append(list(map(int,input().split())))
-print(array)
 
-
-def radder(i):
-    global before
-    global result
-    end = 0
-    min = 999
-    for j in range(1, m+1):
-        a = array[j][1]
-        b = array[j][0]
-        if a == i:
-            if before < b:
-                before = b
-                min = b
-                result = a + 1
-                end = 1
-        if a == i - 1:
-            if before < b:
-                before = b
-                min = b
-                result = a
-                end = 1
-    if end == 0:
-        return result
+def check(i):                          # 사다리가 자기자신에게 가는지 체크하는 함수
+    which = i
+    for j in range(1, h+1):
+        for k in range(1, len(arrayCopy)):
+            if j == arrayCopy[k][0]:
+                line = arrayCopy[k][1]
+                if which == line:
+                    which = line+1
+                    break
+                elif which-1 == line:
+                    which = line
+                    break
+    if which == i:
+        return True
     else:
-        radder(result)
+        return False
 
-resultList = [0 for i in range(n+1)]
-for i in range(1, n+1):
-    result = 0
-    before = 0
-    radder(i)
-    resultList[i] = result
-                    
-print(resultList)
+answerList = [i for i in range(n+1)]            # 최종결과가 answerList와 같아야함
+
+list1 = [i for i in range(1, n)]
+list2 = [i for i in range(1, h+1)]
+two_li = [list2, list1]
+com = list(product(*two_li))                    # 가로선이 나올 수 있는 모든 경우의 수
+
+for i in range(1, m+1):                         # 모든 가로선 중 원래 있는 가로선, 원래있는 가로선과 일직선으로 놓여지는 가로선 제거
+    k = array[i]
+    if tuple(k) in com:
+        com.remove(tuple(k))
+    a = array[i][0]
+    b = array[i][1]
+    if b-1 > 0:
+        if (a,b-1) in com:
+            com.remove((a, b-1))
+    if b+1 < n:
+        if (a,b+1) in com:
+            com.remove((a, b+1))
+
+for i in range(0, 4):                       # 가로선 3개까지 조작 가능
+    com2 = list(combinations(com, i))   
+    for z in range(len(com2)):
+        arrayCopy = copy.deepcopy(array)
+        for x in com2[z]:
+            arrayCopy.append(list(x))
+        for y in range(1, n+1):
+            result = check(y)
+            if result == False:
+                break
+        if result == True:
+            print(i)
+            break
+    if result == True:
+        break
+if result == False:
+    print(-1)
