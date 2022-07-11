@@ -2,6 +2,7 @@
 '미래도시'
 '''
 # 다익스트라 알고리즘
+'''
 import heapq
 
 n, m = map(int, input().split())
@@ -41,5 +42,36 @@ else:
         result += distance[x]
 
 print(result)
+'''
 
+# 플로이드 워셜 알고리즘
+INF = int(1e9)
+
+n, m = map(int, input().split())
+graph = [[INF for i in range(n+1)] for i in range(n+1)]
+
+for i in range(n+1):
+    for j in range(n+1):
+        if i==j:
+            graph[i][j] = 0
+
+for i in range(m):
+    a, b = map(int, input().split())
+    graph[a][b] = 1
+    graph[b][a] = 1
+
+x, k = map(int, input().split())
+
+for i in range(1, n+1):
+    for j in range(1, n+1):
+        for k in range(1, n+1):
+            graph[j][k] = min(graph[j][k], graph[j][i]+graph[i][k])
+
+result = graph[1][k] + graph[k][x]
+if result >= INF:
+    result = -1
+print(result)
+
+for i in range(n+1):
+    print(graph[i])
 
